@@ -10,31 +10,34 @@ v2.8, 2020-03-13
 
 == The Kong Laboratory - Kong API Gateway
 === About
-The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. Universally this journey includes an infrastructure orchestration phase, an application deployment phase, and a service publishing phase.
+The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. Universally this journey includes:
 
-In this hands on series we will dive into using both Kong API Gateway for service publishing, and Pulumi to orchestrate our infrastructure, deploy our applications, and configure our Kong API Gateway.
+* Infrastructure Orchestration
+* Application Deployment
+* Service Publishing
+
+In this hands on series we will use https://kind.sigs.k8s.io/[Kubernetes-in-Docker] (link:https://kind.sigs.k8s.io/[Kind]) as our infrastructure platform. Pulumi to orchestrate our infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.
 
 === Key Concepts
 
-*Kong Gateway* is an API gateway and Ingress Controller. An API gateway is a reverse proxy that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams improving their agility and consolidates this functional ownership into a central location improving global consistency and visibility.
+link:https://konghq.com/kong/[*Kong API Gateway*] is an link:https://konghq.com/learning-center/api-gateway/[API Gateway] and link:https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress[Ingress Controller]. At it's core, Kong is a link:https://www.nginx.com/resources/glossary/reverse-proxy-server[reverse proxy] that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, request & response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.
 
-*Pulumi* is a cloud engineering platform that brings infrastructure teams, developers, and security teams together through a unified software engineering process that accelerates innovation. The Pulumi platform and SDKs allow teams to build, deploy, and manage modern cloud applications faster and with more confidence, using any language, any architecture and any cloud. Supporting Modern Infrastructure as Code using popular programming languages including Python, JavaScript, TypeScript, Go and .NET/C#.
+link:https://www.pulumi.com/[*Pulumi*], is an link:https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code[Infrastructure as Code] (link:https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code[IaC]) or link:https://www.pulumi.com/what-is/what-is-infrastructure-as-software/[Infrastructure as Software] (link:https://www.pulumi.com/what-is/what-is-infrastructure-as-software[IaS]) cloud engineering platform. Pulumi supports IaC/IaS patterns using popular programming languages including Python, JavaScript, TypeScript, Golang, and .NET/C#. At it's heart, the Pulumi ecosystem is a cloud engineering platform and SDK offering that brings together developer, operations, and security teams through a unified software engineering process to accelerate innovation with more confidence via a full suite of link:https://github.com/open-gitops/documents/blob/main/PRINCIPLES.md[OpenGitOps] compliant tools. +
 
 ***
 
 === Host Setup
 
-This article is designed for you to follow along with your MacOS or Linux laptop using https://kind.sigs.k8s.io/[Kubernetes-in-Docker] (https://kind.sigs.k8s.io/[kind]). Before starting, please check that you have installed all link:#prerequisite_dependencies[dependencies]. +
+This article is designed for you to follow along with your MacOS or Linux laptop. Before starting, please check that you have installed all link:#prerequisite_dependencies[dependencies]. +
 
 Okay, now that you have your dependencies, let's grab the code and get your system ready to build the lab platform. +
 
 ====
 
 [start=1]
-. Write Hosts File Entries to resolve your lab domain names locally
+. Write link:https://www.whatsmydns.net/hosts-file.html[Hosts File Entries] to resolve your lab domain names locally
 ```sh
 # Set ADDRESS to your public IP address if you plan to use keycloak
-# https://kind.sigs.k8s.io/docs/user/configuration/#api-server
 
 export ADDRESS=127.0.0.1
 cat <<EOF | sudo tee -a /etc/hosts
@@ -46,14 +49,14 @@ EOF
 ```
 
 [start=2]
-. Create docker volumes for persistent local container image caching +
+. Create link:https://www.linode.com/docs/guides/understanding-docker-volumes/[docker volumes] for persistent local container image caching +
 ```sh
 docker volume create worker1
 docker volume create controlplane1
 ```
 
 [start=3]
-. Clone the TheKongLaboratory git repo
+. Clone link:https://github.com/Kong/TheKongLaboratory[TheKongLaboratory] git repo
 ```sh
 git clone https://github.com/kong/TheKongLaboratory.git ~/thekonglaboratory
 cd ~/thekonglaboratory
@@ -66,16 +69,17 @@ cd ~/thekonglaboratory
 
 Great! Reviewing our check list, we now have: +
 
+* [*] Installed all dependencies.
 * [*] Configured `/etc/hosts` to resolve our domain names to our local IP.
 * [*] Created local cache volumes for kind node images.
 * [*] Cloned the demo repo codebase.
 
-Your system is ready to run the lab and we have the code! Next, before we can deploy the Kong API Gateway we need to initialize the Pulumi codebase and configure a https://www.pulumi.com/docs/intro/concepts/stack/#stacks[Stack]. +
+Your system is ready to run the lab and we have the code! Next, before we can deploy the Kong API Gateway we need to link:https://www.pulumi.com/docs/reference/cli/pulumi_stack_init/[initialize the Pulumi codebase] and configure a https://www.pulumi.com/docs/intro/concepts/stack/#stacks[Stack]. +
 
 ====
 
 [start=4]
-. Configure Pulumi local state provider login
+. Configure Pulumi link:https://www.pulumi.com/docs/intro/concepts/state/[local state provider]
 ```sh
 # Set a Pulumi local state login password
 export PULUMI_CONFIG_PASSPHRASE=mypassword
@@ -96,7 +100,7 @@ pulumi stack select thekonglaboratory
 ```
 
 [start=6]
-. Set Stack Configuration Variables +
+. Set Pulumi Stack link:https://www.pulumi.com/docs/intro/concepts/config/[Configuration Variables] +
 ```sh
 # Create a Kong Enterprise License, an empty license will enable free mode
 pulumi config set --secret kong:license "'{}'"
@@ -108,7 +112,15 @@ pulumi config set kong:enterprise false
 
 === Deploy Kong API Gateway
 
-Now, with your prep work done, it is time to start your Kind cluster and deploy Kong to it!
+Reviewing our check list again, we now have: +
+
+* [*] Installed all dependencies.
+* [*] Configured `/etc/hosts` to resolve our domain names to our local IP.
+* [*] Created local cache volumes for kind node images.
+* [*] Cloned the demo repo codebase.
+* [*] Initialized & Configured your Pulumi Stack
+
+Now, it is time to start your Kind cluster and deploy Kong to it!
 
 ====
 [start=7]
@@ -139,8 +151,34 @@ cmd goes here
 
 ====
 
-=== Conclusion
-Now you have deployed a working Kong Gateway with Pulumi. From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.
+
+== Conclusion
+Now you have deployed a working Kong Gateway with Pulumi providing your IaC automation!
+
+For transparency, I want to briefly describe the scope of what you just deployed. +
+
+* link:https://kubernetes.io[Kubernetes]:
+** [*] link:https://kind.sigs.k8s.io[Kubernetes-in-Docker]
+* link:https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[Namespaces]:
+** [*] The namespace for Kong
+** [*] The namespace for link:https://cert-manager.io/[Cert Manager]
+* link:https://www.ssl.com/faqs/what-is-an-x-509-certificate/[Certificates]:
+** [*] link:https://www.thesslstore.com/knowledgebase/ssl-support/explaining-the-chain-of-trust/[Chain of Trust] for a Cert Manager link:https://cert-manager.io/docs/configuration/selfsigned/[Self Signed Issuer]
+** [*] Default certificate for Kong API Gateway services & proxy
+** [*] Kong controlplane <> dataplane link:https://www.f5.com/labs/articles/education/what-is-mtls[mTLS] certificate
+* link:https://kubernetes.io/docs/concepts/configuration/secret/[Secrets]:
+** [*] Postgres database credentials
+** [*] Kong Manager GUI session configuration
+** [*] Kong API Gateway admin credentials
+** [*] Kong Enterprise License
+* link:https://helm.sh[Helm Charts]:
+** [*] link:https://github.com/cert-manager/cert-manager[Cert Manager]
+** [*] link:https://github.com/bitnami/charts/tree/master/bitnami/postgresql[Bitnami Postgresql]
+** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Controlplane]
+** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Ingress Controller]
+** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Dataplane]
+
+From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.
 
 
 == Appendix
@@ -178,7 +216,7 @@ Now you have deployed a working Kong Gateway with Pulumi. From here you can cont
 ***
 
 === Cleanup
-When you are finished with your local deployment you can clean up all lab artifacts in this order:app-name: +
+When you are finished with your local deployment you can clean up all lab artifacts in this order: +
 
 . Destroy Kong Pulumi Stack
 . Delete Kind Cluster

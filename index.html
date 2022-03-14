@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.15">
+<meta name="generator" content="Asciidoctor 2.0.12">
 <meta name="description" content="Kong on Kubernetes with Pulumi">
 <meta name="author" content="Kat Morgan">
 <title>Kong API Gateway on Kubernetes with Pulumi</title>
@@ -96,6 +96,9 @@ dl dd{margin-bottom:1.25em}
 abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
 abbr{text-transform:none}
 blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite::before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
 blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
 @media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
 h1{font-size:2.75em}
@@ -260,7 +263,7 @@ pre.pygments .lineno::before{content:"";margin-right:-.125em}
 .quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
 .quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
 .quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
-.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
 p.tableblock:last-child{margin-bottom:0}
 td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
 td.tableblock>.content>:last-child{margin-bottom:-1.25em}
@@ -457,9 +460,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_pulumi_infrastructure_as_code">Pulumi Infrastructure as Code</a></li>
 <li><a href="#_deploy_kong_api_gateway">Deploy Kong API Gateway</a></li>
 <li><a href="#_deploy_a_sample_app">Deploy a Sample App</a></li>
-<li><a href="#_conclusion">Conclusion</a></li>
 </ul>
 </li>
+<li><a href="#_conclusion">Conclusion</a></li>
 <li><a href="#_appendix">Appendix</a>
 <ul class="sectlevel2">
 <li><a href="#prerequisite_dependencies">Dependencies</a></li>
@@ -476,26 +479,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_about">About</h3>
 <div class="paragraph">
-<p>The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. Universally this journey includes an infrastructure orchestration phase, an application deployment phase, and a service publishing phase.</p>
+<p>The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. Universally this journey includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Infrastructure Orchestration</p>
+</li>
+<li>
+<p>Application Deployment</p>
+</li>
+<li>
+<p>Service Publishing</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>In this hands on series we will dive into using both Kong API Gateway for service publishing, and Pulumi to orchestrate our infrastructure, deploy our applications, and configure our Kong API Gateway.</p>
+<p>In this hands on series we will use <a href="https://kind.sigs.k8s.io/">Kubernetes-in-Docker</a> (<a href="https://kind.sigs.k8s.io/">Kind</a>) as our infrastructure platform. Pulumi to orchestrate our infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_key_concepts">Key Concepts</h3>
 <div class="paragraph">
-<p><strong>Kong Gateway</strong> is an API gateway and Ingress Controller. An API gateway is a reverse proxy that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams improving their agility and consolidates this functional ownership into a central location improving global consistency and visibility.</p>
+<p><a href="https://konghq.com/kong/"><strong>Kong API Gateway</strong></a> is an <a href="https://konghq.com/learning-center/api-gateway/">API Gateway</a> and <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress">Ingress Controller</a>. At it&#8217;s core, Kong is a <a href="https://www.nginx.com/resources/glossary/reverse-proxy-server">reverse proxy</a> that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, request &amp; response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.</p>
 </div>
 <div class="paragraph">
-<p><strong>Pulumi</strong> is a cloud engineering platform that brings infrastructure teams, developers, and security teams together through a unified software engineering process that accelerates innovation. The Pulumi platform and SDKs allow teams to build, deploy, and manage modern cloud applications faster and with more confidence, using any language, any architecture and any cloud. Supporting Modern Infrastructure as Code using popular programming languages including Python, JavaScript, TypeScript, Go and .NET/C#.</p>
+<p><a href="https://www.pulumi.com/"><strong>Pulumi</strong></a>, is an <a href="https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code">Infrastructure as Code</a> (<a href="https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code">IaC</a>) or <a href="https://www.pulumi.com/what-is/what-is-infrastructure-as-software/">Infrastructure as Software</a> (<a href="https://www.pulumi.com/what-is/what-is-infrastructure-as-software">IaS</a>) cloud engineering platform. Pulumi supports IaC/IaS patterns using popular programming languages including Python, JavaScript, TypeScript, Golang, and .NET/C#. At it&#8217;s heart, the Pulumi ecosystem is a cloud engineering platform and SDK offering that brings together developer, operations, and security teams through a unified software engineering process to accelerate innovation with more confidence via a full suite of <a href="https://github.com/open-gitops/documents/blob/main/PRINCIPLES.md">OpenGitOps</a> compliant tools.<br></p>
 </div>
 <hr>
 </div>
 <div class="sect2">
 <h3 id="_host_setup">Host Setup</h3>
 <div class="paragraph">
-<p>This article is designed for you to follow along with your MacOS or Linux laptop using <a href="https://kind.sigs.k8s.io/">Kubernetes-in-Docker</a> (<a href="https://kind.sigs.k8s.io/">kind</a>). Before starting, please check that you have installed all <a href="#prerequisite_dependencies">dependencies</a>.<br></p>
+<p>This article is designed for you to follow along with your MacOS or Linux laptop. Before starting, please check that you have installed all <a href="#prerequisite_dependencies">dependencies</a>.<br></p>
 </div>
 <div class="paragraph">
 <p>Okay, now that you have your dependencies, let&#8217;s grab the code and get your system ready to build the lab platform.<br></p>
@@ -505,14 +521,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="olist arabic">
 <ol class="arabic" start="1">
 <li>
-<p>Write Hosts File Entries to resolve your lab domain names locally</p>
+<p>Write <a href="https://www.whatsmydns.net/hosts-file.html">Hosts File Entries</a> to resolve your lab domain names locally</p>
 </li>
 </ol>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-sh" data-lang="sh"># Set ADDRESS to your public IP address if you plan to use keycloak
-# https://kind.sigs.k8s.io/docs/user/configuration/#api-server
 
 export ADDRESS=127.0.0.1
 cat &lt;&lt;EOF | sudo tee -a /etc/hosts
@@ -526,7 +541,7 @@ EOF</code></pre>
 <div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Create docker volumes for persistent local container image caching<br></p>
+<p>Create <a href="https://www.linode.com/docs/guides/understanding-docker-volumes/">docker volumes</a> for persistent local container image caching<br></p>
 </li>
 </ol>
 </div>
@@ -539,7 +554,7 @@ docker volume create controlplane1</code></pre>
 <div class="olist arabic">
 <ol class="arabic" start="3">
 <li>
-<p>Clone the TheKongLaboratory git repo</p>
+<p>Clone <a href="https://github.com/Kong/TheKongLaboratory">TheKongLaboratory</a> git repo</p>
 </li>
 </ol>
 </div>
@@ -560,6 +575,9 @@ cd ~/thekonglaboratory</code></pre>
 <div class="ulist checklist">
 <ul class="checklist">
 <li>
+<p>&#10003; Installed all dependencies.</p>
+</li>
+<li>
 <p>&#10003; Configured <code>/etc/hosts</code> to resolve our domain names to our local IP.</p>
 </li>
 <li>
@@ -571,14 +589,14 @@ cd ~/thekonglaboratory</code></pre>
 </ul>
 </div>
 <div class="paragraph">
-<p>Your system is ready to run the lab and we have the code! Next, before we can deploy the Kong API Gateway we need to initialize the Pulumi codebase and configure a <a href="https://www.pulumi.com/docs/intro/concepts/stack/#stacks">Stack</a>.<br></p>
+<p>Your system is ready to run the lab and we have the code! Next, before we can deploy the Kong API Gateway we need to <a href="https://www.pulumi.com/docs/reference/cli/pulumi_stack_init/">initialize the Pulumi codebase</a> and configure a <a href="https://www.pulumi.com/docs/intro/concepts/stack/#stacks">Stack</a>.<br></p>
 </div>
 <div class="exampleblock">
 <div class="content">
 <div class="olist arabic">
 <ol class="arabic" start="4">
 <li>
-<p>Configure Pulumi local state provider login</p>
+<p>Configure Pulumi <a href="https://www.pulumi.com/docs/intro/concepts/state/">local state provider</a></p>
 </li>
 </ol>
 </div>
@@ -611,7 +629,7 @@ pulumi stack select thekonglaboratory</code></pre>
 <div class="olist arabic">
 <ol class="arabic" start="6">
 <li>
-<p>Set Stack Configuration Variables<br></p>
+<p>Set Pulumi Stack <a href="https://www.pulumi.com/docs/intro/concepts/config/">Configuration Variables</a><br></p>
 </li>
 </ol>
 </div>
@@ -630,7 +648,29 @@ pulumi config set kong:enterprise false</code></pre>
 <div class="sect2">
 <h3 id="_deploy_kong_api_gateway">Deploy Kong API Gateway</h3>
 <div class="paragraph">
-<p>Now, with your prep work done, it is time to start your Kind cluster and deploy Kong to it!</p>
+<p>Reviewing our check list again, we now have:<br></p>
+</div>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; Installed all dependencies.</p>
+</li>
+<li>
+<p>&#10003; Configured <code>/etc/hosts</code> to resolve our domain names to our local IP.</p>
+</li>
+<li>
+<p>&#10003; Created local cache volumes for kind node images.</p>
+</li>
+<li>
+<p>&#10003; Cloned the demo repo codebase.</p>
+</li>
+<li>
+<p>&#10003; Initialized &amp; Configured your Pulumi Stack</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now, it is time to start your Kind cluster and deploy Kong to it!</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -683,11 +723,103 @@ pulumi up -y</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_conclusion">Conclusion</h3>
-<div class="paragraph">
-<p>Now you have deployed a working Kong Gateway with Pulumi. From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now you have deployed a working Kong Gateway with Pulumi providing your IaC automation!</p>
+</div>
+<div class="paragraph">
+<p>For transparency, I want to briefly describe the scope of what you just deployed.<br></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubernetes.io">Kubernetes</a>:</p>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; <a href="https://kind.sigs.k8s.io">Kubernetes-in-Docker</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">Namespaces</a>:</p>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; The namespace for Kong</p>
+</li>
+<li>
+<p>&#10003; The namespace for <a href="https://cert-manager.io/">Cert Manager</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://www.ssl.com/faqs/what-is-an-x-509-certificate/">Certificates</a>:</p>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; <a href="https://www.thesslstore.com/knowledgebase/ssl-support/explaining-the-chain-of-trust/">Chain of Trust</a> for a Cert Manager <a href="https://cert-manager.io/docs/configuration/selfsigned/">Self Signed Issuer</a></p>
+</li>
+<li>
+<p>&#10003; Default certificate for Kong API Gateway services &amp; proxy</p>
+</li>
+<li>
+<p>&#10003; Kong controlplane &lt;&gt; dataplane <a href="https://www.f5.com/labs/articles/education/what-is-mtls">mTLS</a> certificate</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secrets</a>:</p>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; Postgres database credentials</p>
+</li>
+<li>
+<p>&#10003; Kong Manager GUI session configuration</p>
+</li>
+<li>
+<p>&#10003; Kong API Gateway admin credentials</p>
+</li>
+<li>
+<p>&#10003; Kong Enterprise License</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://helm.sh">Helm Charts</a>:</p>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p>&#10003; <a href="https://github.com/cert-manager/cert-manager">Cert Manager</a></p>
+</li>
+<li>
+<p>&#10003; <a href="https://github.com/bitnami/charts/tree/master/bitnami/postgresql">Bitnami Postgresql</a></p>
+</li>
+<li>
+<p>&#10003; <a href="https://github.com/Kong/charts/tree/main/charts/kong">Kong Controlplane</a></p>
+</li>
+<li>
+<p>&#10003; <a href="https://github.com/Kong/charts/tree/main/charts/kong">Kong Ingress Controller</a></p>
+</li>
+<li>
+<p>&#10003; <a href="https://github.com/Kong/charts/tree/main/charts/kong">Kong Dataplane</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.</p>
 </div>
 </div>
 </div>
@@ -747,7 +879,7 @@ pulumi up -y</code></pre>
 <div class="sect2">
 <h3 id="_cleanup">Cleanup</h3>
 <div class="paragraph">
-<p>When you are finished with your local deployment you can clean up all lab artifacts in this order:app-name:<br></p>
+<p>When you are finished with your local deployment you can clean up all lab artifacts in this order:<br></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -838,7 +970,7 @@ cd ~ &amp;&amp; rm -rf ~/thekonglaboratory</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 2.8<br>
-Last updated 2022-03-13 13:12:55 -0700
+Last updated 2022-03-13 17:32:21 -0700
 </div>
 </div>
 </body>
