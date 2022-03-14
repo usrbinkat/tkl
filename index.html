@@ -535,6 +535,7 @@ ${ADDRESS}  apps.kind.home.arpa
 ${ADDRESS}  portal.kong.kind.home.arpa
 ${ADDRESS}  manager.kong.kind.home.arpa
 ${ADDRESS}  keycloak.apps.kind.home.arpa
+${ADDRESS}  podinfo.apps.kind.home.arpa
 EOF</code></pre>
 </div>
 </div>
@@ -899,6 +900,9 @@ pulumi up -y</code></pre>
 <li>
 <p>Remove TheKongLaboratory Git Repo</p>
 </li>
+<li>
+<p>Manually cleanup <code>/etc/hosts</code> entries</p>
+</li>
 </ol>
 </div>
 <div class="exampleblock">
@@ -965,6 +969,22 @@ export PULUMI_CONFIG_PASSPHRASE=mypassword</code></pre>
 cd ~ &amp;&amp; rm -rf ~/thekonglaboratory</code></pre>
 </div>
 </div>
+<div class="olist arabic">
+<ol class="arabic" start="5">
+<li>
+<p>Open the <code>/etc/hosts</code> file and remove the following entries:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">127.0.0.1  apps.kind.home.arpa
+127.0.0.1  portal.kong.kind.home.arpa
+127.0.0.1  manager.kong.kind.home.arpa
+127.0.0.1  keycloak.apps.kind.home.arpa
+127.0.0.1  podinfo.apps.kind.home.arpa</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -974,7 +994,7 @@ cd ~ &amp;&amp; rm -rf ~/thekonglaboratory</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 2.8<br>
-Last updated 2022-03-13 21:31:48 -0700
+Last updated 2022-03-14 11:15:27 -0700
 </div>
 </div>
 </body>

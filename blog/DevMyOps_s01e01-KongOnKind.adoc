@@ -45,6 +45,7 @@ ${ADDRESS}  apps.kind.home.arpa
 ${ADDRESS}  portal.kong.kind.home.arpa
 ${ADDRESS}  manager.kong.kind.home.arpa
 ${ADDRESS}  keycloak.apps.kind.home.arpa
+${ADDRESS}  podinfo.apps.kind.home.arpa
 EOF
 ```
 
@@ -227,6 +228,7 @@ When you are finished with your local deployment you can clean up all lab artifa
 . Delete Kind Cluster
 . Remove Docker Volumes
 . Remove TheKongLaboratory Git Repo
+. Manually cleanup `/etc/hosts` entries
 
 ====
 
@@ -263,4 +265,13 @@ pulumi --stack thekonglaboratory stack rm -y
 cd ~ && rm -rf ~/thekonglaboratory
 ```
 
+[start=5]
+. Open the `/etc/hosts` file and remove the following entries:
+```sh
+127.0.0.1  apps.kind.home.arpa
+127.0.0.1  portal.kong.kind.home.arpa
+127.0.0.1  manager.kong.kind.home.arpa
+127.0.0.1  keycloak.apps.kind.home.arpa
+127.0.0.1  podinfo.apps.kind.home.arpa
+```
 ====
