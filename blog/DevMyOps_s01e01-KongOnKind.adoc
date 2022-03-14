@@ -10,7 +10,7 @@ v2.8, 2020-03-13
 
 == The Kong Laboratory - Kong API Gateway
 === About
-The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. Universally this journey includes:
+The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. While daunting at first glance, we can break down the process into 3 categories:
 
 * Infrastructure Orchestration
 * Application Deployment
