@@ -10,17 +10,17 @@ v2.8, 2020-03-13
 
 == The Kong Laboratory - Kong API Gateway
 === About
-The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. While daunting at first glance, we can break down the process into 3 categories:
+The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. While daunting at first glance, we can break down the process into 3 major categories:
 
 * Infrastructure Orchestration
 * Application Deployment
 * Service Publishing
 
-In this hands on series we will use https://kind.sigs.k8s.io/[Kubernetes-in-Docker] (link:https://kind.sigs.k8s.io/[Kind]) as our infrastructure platform. Pulumi to orchestrate our infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.
+In this hands on series we will use https://kind.sigs.k8s.io/[Kubernetes-in-Docker] (link:https://kind.sigs.k8s.io/[Kind]) as our infrastructure platform. Pulumi to orchestrate our supporting infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.
 
 === Key Concepts
 
-link:https://konghq.com/kong/[*Kong API Gateway*] is an link:https://konghq.com/learning-center/api-gateway/[API Gateway] and link:https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress[Ingress Controller]. At it's core, Kong is a link:https://www.nginx.com/resources/glossary/reverse-proxy-server[reverse proxy] that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, request & response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.
+link:https://konghq.com/kong/[*Kong API Gateway*] is an link:https://konghq.com/learning-center/api-gateway/[API Gateway] and link:https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress[Ingress Controller]. At it's core, Kong is a link:https://www.nginx.com/resources/glossary/reverse-proxy-server[reverse proxy] that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway truly begins to shine when leveraged to consolidate capabilities such as authentication, link:https://auth0.com/intro-to-iam/what-is-role-based-access-control-rbac/[rbac], session handling, rate limiting, request & response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.
 
 link:https://www.pulumi.com/[*Pulumi*], is an link:https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code[Infrastructure as Code] (link:https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code[IaC]) or link:https://www.pulumi.com/what-is/what-is-infrastructure-as-software/[Infrastructure as Software] (link:https://www.pulumi.com/what-is/what-is-infrastructure-as-software[IaS]) cloud engineering platform. Pulumi supports IaC/IaS patterns using popular programming languages including Python, JavaScript, TypeScript, Golang, and .NET/C#. At it's heart, the Pulumi ecosystem is a cloud engineering platform and SDK offering that brings together developer, operations, and security teams through a unified software engineering process to accelerate innovation with more confidence via a full suite of link:https://github.com/open-gitops/documents/blob/main/PRINCIPLES.md[OpenGitOps] compliant tools. +
 
@@ -37,7 +37,7 @@ Okay, now that you have your dependencies, let's grab the code and get your syst
 [start=1]
 . Write link:https://www.whatsmydns.net/hosts-file.html[Hosts File Entries] to resolve your lab domain names locally
 ```sh
-# Set ADDRESS to your public IP address if you plan to use keycloak
+# Set ADDRESS to your public IP address if you plan to use Keycloak
 
 export ADDRESS=127.0.0.1
 cat <<EOF | sudo tee -a /etc/hosts
@@ -153,9 +153,10 @@ cmd goes here
 
 
 == Conclusion
-Now you have deployed a working Kong Gateway with Pulumi providing your IaC automation!
+Congratulations! In roughly 1000 lines of TypeScript code, we have deployed a working Kong API Gateway and all supporting services with Pulumi! For transparency, I want to briefly list the scope of what you just deployed. +
 
-For transparency, I want to briefly describe the scope of what you just deployed. +
+
+====
 
 * link:https://kubernetes.io[Kubernetes]:
 ** [*] link:https://kind.sigs.k8s.io[Kubernetes-in-Docker]
@@ -177,6 +178,10 @@ For transparency, I want to briefly describe the scope of what you just deployed
 ** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Controlplane]
 ** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Ingress Controller]
 ** [*] link:https://github.com/Kong/charts/tree/main/charts/kong[Kong Dataplane]
+
+====
+
+Now that you have Kong installed and ready to use, this will be the foundation for future posts in the DevMyOps series and is also a great way to get started with Kong for evaluation and local development purposes. +
 
 From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.
 

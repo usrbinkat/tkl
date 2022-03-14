@@ -479,7 +479,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_about">About</h3>
 <div class="paragraph">
-<p>The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. While daunting at first glance, we can break down the process into 3 categories:</p>
+<p>The quest for resilience and agility has driven us into the modern age of micro-services. Bringing services to market on a micro service architecture demands utilization of sprawling technology offerings and tooling. While daunting at first glance, we can break down the process into 3 major categories:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -495,13 +495,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 <div class="paragraph">
-<p>In this hands on series we will use <a href="https://kind.sigs.k8s.io/">Kubernetes-in-Docker</a> (<a href="https://kind.sigs.k8s.io/">Kind</a>) as our infrastructure platform. Pulumi to orchestrate our infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.</p>
+<p>In this hands on series we will use <a href="https://kind.sigs.k8s.io/">Kubernetes-in-Docker</a> (<a href="https://kind.sigs.k8s.io/">Kind</a>) as our infrastructure platform. Pulumi to orchestrate our supporting infrastructure and deploy our applications. And finally, Kong API Gateway for publishing the services that we have deployed.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_key_concepts">Key Concepts</h3>
 <div class="paragraph">
-<p><a href="https://konghq.com/kong/"><strong>Kong API Gateway</strong></a> is an <a href="https://konghq.com/learning-center/api-gateway/">API Gateway</a> and <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress">Ingress Controller</a>. At it&#8217;s core, Kong is a <a href="https://www.nginx.com/resources/glossary/reverse-proxy-server">reverse proxy</a> that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway shows it’s true value when leveraged to consolidate capabilities such as authentication, session handling, rate limiting, request &amp; response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.</p>
+<p><a href="https://konghq.com/kong/"><strong>Kong API Gateway</strong></a> is an <a href="https://konghq.com/learning-center/api-gateway/">API Gateway</a> and <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress">Ingress Controller</a>. At it&#8217;s core, Kong is a <a href="https://www.nginx.com/resources/glossary/reverse-proxy-server">reverse proxy</a> that allows an organization to offer APIs as a product to internal and external clients via a centralized ingress point. An API Gateway truly begins to shine when leveraged to consolidate capabilities such as authentication, <a href="https://auth0.com/intro-to-iam/what-is-role-based-access-control-rbac/">rbac</a>, session handling, rate limiting, request &amp; response transformation, redirection, load balancing, traffic monitoring, and logging. These advanced routing features offload enforcement, maintenance, and visibility from the application teams, improving their agility and consolidating this functional ownership into a central location for improved global consistency and visibility.</p>
 </div>
 <div class="paragraph">
 <p><a href="https://www.pulumi.com/"><strong>Pulumi</strong></a>, is an <a href="https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code">Infrastructure as Code</a> (<a href="https://docs.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code">IaC</a>) or <a href="https://www.pulumi.com/what-is/what-is-infrastructure-as-software/">Infrastructure as Software</a> (<a href="https://www.pulumi.com/what-is/what-is-infrastructure-as-software">IaS</a>) cloud engineering platform. Pulumi supports IaC/IaS patterns using popular programming languages including Python, JavaScript, TypeScript, Golang, and .NET/C#. At it&#8217;s heart, the Pulumi ecosystem is a cloud engineering platform and SDK offering that brings together developer, operations, and security teams through a unified software engineering process to accelerate innovation with more confidence via a full suite of <a href="https://github.com/open-gitops/documents/blob/main/PRINCIPLES.md">OpenGitOps</a> compliant tools.<br></p>
@@ -527,7 +527,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh"># Set ADDRESS to your public IP address if you plan to use keycloak
+<pre class="highlight"><code class="language-sh" data-lang="sh"># Set ADDRESS to your public IP address if you plan to use Keycloak
 
 export ADDRESS=127.0.0.1
 cat &lt;&lt;EOF | sudo tee -a /etc/hosts
@@ -729,11 +729,10 @@ pulumi up -y</code></pre>
 <h2 id="_conclusion">Conclusion</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now you have deployed a working Kong Gateway with Pulumi providing your IaC automation!</p>
+<p>Congratulations! In roughly 1000 lines of TypeScript code, we have deployed a working Kong API Gateway and all supporting services with Pulumi! For transparency, I want to briefly list the scope of what you just deployed.<br></p>
 </div>
-<div class="paragraph">
-<p>For transparency, I want to briefly describe the scope of what you just deployed.<br></p>
-</div>
+<div class="exampleblock">
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
@@ -817,6 +816,11 @@ pulumi up -y</code></pre>
 </div>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that you have Kong installed and ready to use, this will be the foundation for future posts in the DevMyOps series and is also a great way to get started with Kong for evaluation and local development purposes.<br></p>
 </div>
 <div class="paragraph">
 <p>From here you can continue with configuring kong manager and kong plugins, or you can start using the Kong Ingress Controller to publish services on your kind cluster via Kong.</p>
@@ -970,7 +974,7 @@ cd ~ &amp;&amp; rm -rf ~/thekonglaboratory</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 2.8<br>
-Last updated 2022-03-13 20:48:02 -0700
+Last updated 2022-03-13 21:31:48 -0700
 </div>
 </div>
 </body>
