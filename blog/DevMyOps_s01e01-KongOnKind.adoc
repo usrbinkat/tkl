@@ -5,7 +5,7 @@
 
 = Kong API Gateway on Kubernetes with Pulumi
 Kat Morgan <usrbinkat@konghq.com>
-v2.8, 2020-03-13
+v2.8, 2020-03-15
 :toc:
 
 == The Kong Laboratory - Kong API Gateway
