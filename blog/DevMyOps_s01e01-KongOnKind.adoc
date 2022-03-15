@@ -141,13 +141,30 @@ pulumi up -y
 
 === Deploy a Sample App
 
-Let's go ahead and test our new Kong API Gateway by deploying a sample application. +
+Let's go ahead and test our new Kong API Gateway by deploying link:https://github.com/stefanprodan/podinfo[Podinfo] as a sample application to experiment with. +
 
 ====
 [start=9]
-. Deploy Sample App
+. Deploy a simple Podinfo Sample application. +
 ```sh
-cmd goes here
+# change directory to Podinfo App
+cd ~/thekonglaboratory/doc/s01e01-SimpleApp
+
+# Set a Pulumi local state login password
+export PULUMI_CONFIG_PASSPHRASE=mypassword
+
+# Run pulumi login --help for more state backend and login information
+pulumi login --local
+
+# Download npm packages for Pulumi typescript IaC
+npm install
+
+# Initialize and select your pulumi stack
+pulumi stack init podinfo
+pulumi stack select podinfo
+
+# Deploy Podinfo Sample App
+pulumi up -y
 ```
 
 ====
